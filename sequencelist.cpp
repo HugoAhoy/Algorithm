@@ -14,7 +14,7 @@ class SqList
     public:
     SqList(int n = DEFAULT_SIZE);//构造函数，初始化一个含有n个元素的空表
     virtual ~SqList();//虚析构函数
-    int Lenghth() const;
+    int Length() const;
     bool Empty() const;
     void Clear();
     void Traverse();//参数不明白
@@ -54,7 +54,7 @@ SqList<T>::~SqList()
 }
 
 template<typename T>
-int SqList<T>::Lenghth() const
+int SqList<T>::Length() const
 {
     return size;
 }
