@@ -22,6 +22,8 @@ class SqList
     bool SetElem(int postion, const T& elem);
     bool Delete(int position, T& elem);
     bool Insert(int position, const T& elem);
+    int Prior(T &elem, T &elem_get);
+    int Next(T &elem, T &elem_get);
     SqList(SqList<T>& obj);//拷贝构造
     SqList<T>& operator = (const SqList<T>& obj);//复制运算符重载
 };
@@ -121,6 +123,7 @@ bool SqList<T>::Delete(int position, T& elem)
         {
             data[i] = data[i + 1];
         }
+        size--;
         return true;
     }
 }
@@ -139,6 +142,7 @@ bool SqList<T>::Insert(int position, const T& elem)
             data[i + 1] = data[i];
         }
         data[position - 1] = elem;
+        size++;
         return true;
     }
 }
