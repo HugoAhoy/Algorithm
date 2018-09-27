@@ -17,7 +17,7 @@ class SqList
     int Length() const;
     bool Empty() const;
     void Clear();
-    void Traverse();//参数不明白
+    void Traverse(void (*func)(T& elem));//参数不明白
     bool GetElem(int positon, T& elem) const;
     bool SetElem(int postion, const T& elem);
     bool Delete(int position, T& elem);
@@ -75,9 +75,12 @@ void SqList<T> :: Clear()
 }
 
 template<typename T>
-void SqList<T>::Traverse()
+void SqList<T>:: Traverse(void (*func)(T& elem))//参数不明白
 {
-    //待补充
+    for(int i = 0; i < this->Length(); i++)
+    {
+        (*func)(this->data[i]);
+    }
     return;
 }
 
