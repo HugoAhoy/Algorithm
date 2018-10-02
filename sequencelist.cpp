@@ -17,7 +17,7 @@ class SqList
     int Length() const;
     bool Empty() const;
     void Clear();
-    void Traverse(void (*func)(T& elem));//参数不明白
+    void Traverse(void (*func)(T& elem));
     bool GetElem(int positon, T& elem) const;
     bool SetElem(int postion, const T& elem);
     bool Delete(int position, T& elem);
@@ -32,14 +32,19 @@ class SqList
 template<typename T>
 bool SqList<T>::Full() const
 {
-    return size == maxsize;
+    return size == MAXSIZE;
 }
 
 template<typename T>
 void SqList<T>::init(int size)
 {
     this->data = new T[this->MAXSIZE];
-    //如何初始化？
+    this->size = size;
+    for(int i = 0; i < size; i++)
+    {
+        data[i] = T();
+    }
+    return;
 }
 
 template<typename T>
@@ -52,7 +57,7 @@ SqList<T>::SqList(int size)
 template<typename T>
 SqList<T>::~SqList()
 {
-    delete data[];
+    delete []data;
 }
 
 template<typename T>
@@ -75,7 +80,7 @@ void SqList<T> :: Clear()
 }
 
 template<typename T>
-void SqList<T>:: Traverse(void (*func)(T& elem))//参数不明白
+void SqList<T>:: Traverse(void (*func)(T& elem))
 {
     for(int i = 0; i < this->Length(); i++)
     {
@@ -87,7 +92,7 @@ void SqList<T>:: Traverse(void (*func)(T& elem))//参数不明白
 template<typename T>
 bool SqList<T>::GetElem(int position, T& elem) const
 {
-    if(postion < 1 || postion > size)
+    if(position < 1 || position > size)
     {
         return false;
     }
@@ -101,7 +106,7 @@ bool SqList<T>::GetElem(int position, T& elem) const
 template<typename T>
 bool SqList<T>::SetElem(int position, const T& elem)
 {
-    if(postion < 1 || postion > size)
+    if(position < 1 || position > size)
     {
         return false;
     }
@@ -115,14 +120,14 @@ bool SqList<T>::SetElem(int position, const T& elem)
 template<typename T>
 bool SqList<T>::Delete(int position, T& elem)
 {
-    if(postion < 1 || postion > size)
+    if(position < 1 || position > size)
     {
         return false;
     }
     else
     {
         elem = data[position - 1];
-        for(int i = position - 1; i < size - 2 ; i++)
+        for(int i = position - 1; i < size - 1 ; i++)
         {
             data[i] = data[i + 1];
         }
@@ -134,7 +139,7 @@ bool SqList<T>::Delete(int position, T& elem)
 template<typename T>
 bool SqList<T>::Insert(int position, const T& elem)
 {
-    if(postion < 1 || postion > size)
+    if(position < 0 || position > size + 1)
     {
         return false;
     }
