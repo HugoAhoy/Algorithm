@@ -1,12 +1,12 @@
 //无头结点的单链表
 //前向申明
 template<typename T>
-class SingLinkList;
+class SingleLinkList;
 //结点类声明
 template<typename T>
 class Node
 {
-    friend class SingLinkList<T>;
+    friend class SingleLinkList<T>;
     public:
     Node(const T& _elem);
     Node();
@@ -17,16 +17,18 @@ class Node
 
 //链表类声明
 template<typename T>
-class SingLinkList
+class SingleLinkList
 {
     private:
     Node<T> *head, *tail;
     int elemNum;
 
     public:
-    SingLinkList();
-    virtual ~SingLinkList();
+    SingleLinkList();
+    virtual ~SingleLinkList();
+    int Length();
     bool InsertAfter(int position, const T& elem);
+    bool InsertAfter(int position, const Node<T>);
     bool Delete(int position, T& elem);
     bool Traverse(void (*func)(T& elem));
     void Clear();
@@ -34,7 +36,7 @@ class SingLinkList
     bool SetElem(int postion, const T& elem);
     int Prior(T &elem, T &elem_get);
     int Next(T &elem, T &elem_get);
-    SingLinkList(SingLinkList<T>& obj);//拷贝构造
+    SingleLinkList(SingleLinkList<T>& obj);//拷贝构造
 
 };
 
@@ -54,14 +56,20 @@ Node<T>::Node()
 }
 
 template<typename T>
-SingLinkList<T>::SingLinkList()
+SingleLinkList<T>::SingleLinkList()
 {
     head = tail = nullptr;
     elemNum = 0;
 }
 
 template<typename T>
-bool SingLinkList<T>::InsertAfter(int position, const T& elem)
+int SingleLinkList<T>::Length()
+{
+    return elemNum;
+}
+
+template<typename T>
+bool SingleLinkList<T>::InsertAfter(int position, const T& elem)
 {
     if(position < 0 || position > elemNum)
     {
@@ -88,7 +96,33 @@ bool SingLinkList<T>::InsertAfter(int position, const T& elem)
 }
 
 template<typename T>
-bool SingLinkList<T>::Delete(int position, T& elem)
+bool SingleLinkList<T>::InsertAfter(int position, const Node<T> elem)
+{
+    if(position < 0 || position > elemNum)
+    {
+        return false;
+    }
+    else
+    {
+        Node<T>* temp;
+        temp = head;
+        for(int i = 0; i < position - 1; i++)
+        {
+            temp = temp->next;
+        }
+        elem.next = temp->next;
+        temp->next = &elem;
+        if(position == elemNum)
+        {
+            tail = &elem;
+        }
+        elemNum++;
+        return true;
+    }
+}
+
+template<typename T>
+bool SingleLinkList<T>::Delete(int position, T& elem)
 {
     if(position <= 0 || position > elemNum)
     {
@@ -96,7 +130,7 @@ bool SingLinkList<T>::Delete(int position, T& elem)
     }
     else
     {
-        if(positon = 1)
+        if(position == 1)
         {
             Node<T> *save = head->next;
             elem = head->elem;
@@ -122,7 +156,7 @@ bool SingLinkList<T>::Delete(int position, T& elem)
 }
 
 template<typename T>
-bool SingLinkList<T>::Traverse(void (*func)(T& elem))
+bool SingleLinkList<T>::Traverse(void (*func)(T& elem))
 {
     Node<T> * temp = head;
     for(int i = 0; i < elemNum; i++)
@@ -134,7 +168,7 @@ bool SingLinkList<T>::Traverse(void (*func)(T& elem))
 }
 
 template<typename T>
-void SingLinkList<T>::Clear()
+void SingleLinkList<T>::Clear()
 {
     while(elemNum != 0)
     {
@@ -146,7 +180,7 @@ void SingLinkList<T>::Clear()
 }
 
 template<typename T>
-bool SingLinkList<T>::GetElem(int positon, T& elem) const
+bool SingleLinkList<T>::GetElem(int position, T& elem) const
 {
     if(position <= 0 || position > elemNum)
     {
@@ -165,7 +199,7 @@ bool SingLinkList<T>::GetElem(int positon, T& elem) const
 }
 
 template<typename T>
-bool SingLinkList<T>::SetElem(int postion, const T& elem)
+bool SingleLinkList<T>::SetElem(int position, const T& elem)
 {
     if(position <= 0 || position > elemNum)
     {
@@ -184,7 +218,7 @@ bool SingLinkList<T>::SetElem(int postion, const T& elem)
 }
 
 template<typename T>
-int SingLinkList<T>::Prior(T &elem, T &elem_get)
+int SingleLinkList<T>::Prior(T &elem, T &elem_get)
 {
     Node<T> *temp = head->next;
     T priorElem = head->elem;
@@ -205,7 +239,7 @@ int SingLinkList<T>::Prior(T &elem, T &elem_get)
 }
 
 template<typename T>
-int SingLinkList<T>::Next(T &elem, T &elem_get)
+int SingleLinkList<T>::Next(T &elem, T &elem_get)
 {
     Node<T> *temp = head;
     T nextElem = head->next->elem;
@@ -226,7 +260,7 @@ int SingLinkList<T>::Next(T &elem, T &elem_get)
 }
 
 template<typename T>
-SingLinkList<T>::~SingLinkList()
+SingleLinkList<T>::~SingleLinkList()
 {
     this->Clear();
 }
