@@ -27,6 +27,7 @@ inline void calculation(char op, int left , int right, stack<int> &oprand) {
 inline void gen_num(string &exp, int &index, int &ans);
 inline bool isNum(char ch);
 int exp_value(stack<char> &ops, stack<int> &oprand, map<char,int> &prior, string &exp, int strlen,int index = 0);
+stirng addBracket(string exp);
 void init_PriorMap(map<char,int> &temp) {
     temp.insert(make_pair('+',1));
     temp.insert(make_pair('-',1));
@@ -113,4 +114,36 @@ int exp_value(stack<char> &ops, stack<int> &oprand, map<char,int> &prior, string
         ops.pop();
     }
     return index;
+}
+
+string addBracket(string exp) {
+    string newstr = "";
+	int len = exp.length();
+    for(int i = 0; i < len; i++) {
+        if(exp[i] == '-' || exp[i] == '+') {
+            if(i == 0 || exp[i-1] == '('|| exp[i-1] == '*' || exp[i-1] == '/'|| exp[i-1] == '^'|| exp[i-1] == '+'|| exp[i-1] == '-') {
+                newstr = newstr + "(0" + exp[i++];
+                if((exp[i] == '+' || exp[i] == '-')&& i != len - 1) {
+                    i--;
+                    continue;
+                }
+                while(exp[i] <= '9' && exp[i] >='0') {
+					newstr = newstr + exp[i++];
+					if(i == len) {
+						newstr = newstr + ')';
+						break;
+					}
+				}
+				newstr =newstr + ')';
+				i--;
+            }
+            else {
+                newstr = newstr + exp[i];
+            }
+        }
+        else {
+            newstr = newstr + exp[i];
+        }
+    }
+	return newstr;
 }
