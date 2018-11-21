@@ -88,11 +88,6 @@ priority_queue<pair<int,weight_TreeNode<char> >,greater<wei_node_pair> > pq;
 
 weight_TreeNode<char>* buildHuffman(priority_queue<pair<int,weight_TreeNode<char> >,greater<wei_node_pair> > pq);
 
-int main() {
-    
-    return 0;
-}
-
 template<class T>
 bool TreeNode<T>::addL(TreeNode<T> &elem) {
     if(lchild == nullptr) {
@@ -116,14 +111,21 @@ weight_TreeNode<char>* buildHuffman(priority_queue<pair<int,weight_TreeNode<char
     if(pq.empty()) {
         return nullptr;
     }
-    do {
+    if(pq.size() == 1) {
+        root = pq.top().second();
+        pq.pop();
+        return root;
+    }
+    while(true) {
         right = pq.top().second();
         pq.pop();
         left = pq.top().second();
         pq.pop();
         root = *right + *left;
+        if(pq.empty()) {
+            break;
+        } 
         pq.push(wei_node_pair(*root));
-    }while(pq.size() > 1);
-    //implementation to do
-    return root;   
+    }
+    return root;
 }
