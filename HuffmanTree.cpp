@@ -50,6 +50,7 @@ class weight_TreeNode:public TreeNode<T> {
 };
 
 class wei_node_pair {
+    friend bool operator >(wei_node_pair a, wei_node_pair b);
     private:
     pair<int,weight_TreeNode<char>*> elem;
     public:
@@ -61,13 +62,19 @@ class wei_node_pair {
     //     elem.first = weight;
     //     elem.second = this;
     // }
-    bool operator <(wei_node_pair &obj) {
-        return this->elem.first < obj.elem.first;
-    }
-    weight_TreeNode<char> * second() {
+    // bool operator <(const wei_node_pair &obj) {
+    //     return this->elem.first < obj.elem.first;
+    // }
+    // bool operator >(const wei_node_pair &obj) {
+    //     return this->elem.first > obj.elem.first;
+    // }
+    weight_TreeNode<char> * second() const{
         return elem.second;
     }
 };
+bool operator >(wei_node_pair a, wei_node_pair b) {
+    return a.elem.first > b.elem.first;
+}
 // template <class T>
 // class Tree {
 //     private:
@@ -84,9 +91,9 @@ class wei_node_pair {
 //     void Traverse();
 // };
 
-priority_queue<pair<int,weight_TreeNode<char> >,greater<wei_node_pair> > pq;
+priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq;
 
-weight_TreeNode<char>* buildHuffman(priority_queue<pair<int,weight_TreeNode<char> >,greater<wei_node_pair> > pq);
+weight_TreeNode<char>* buildHuffman(priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq);
 
 template<class T>
 bool TreeNode<T>::addL(TreeNode<T> &elem) {
@@ -106,7 +113,7 @@ bool TreeNode<T>::addR(TreeNode<T> &elem) {
     return false;
 }
 
-weight_TreeNode<char>* buildHuffman(priority_queue<pair<int,weight_TreeNode<char> >,greater<wei_node_pair> > pq) {
+weight_TreeNode<char>* buildHuffman(priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq) {
     weight_TreeNode<char> *root, *right, *left;
     if(pq.empty()) {
         return nullptr;
