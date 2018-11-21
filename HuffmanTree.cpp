@@ -129,6 +129,8 @@ weight_TreeNode<char>* buildHuffman(priority_queue<wei_node_pair,vector<wei_node
         left = pq.top().second();
         pq.pop();
         root = *right + *left;
+        root->addL(*left);
+        root->addR(*right);
         if(pq.empty()) {
             break;
         } 
