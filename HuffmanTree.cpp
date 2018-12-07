@@ -1,99 +1,82 @@
-#include"map"
-#include"queue"
+#include"vector"
+#include"unordered_map"
 #include"iostream"
+#include"string"
 #include"algorithm"
-#include"utility"
 using namespace std;
 
-// template<class T>
-// class Tree;
-
-// template<class T>
-// class weightTable {
-//     private:
-//     map<T,int> weight_table;
-//     map<T,double>normal_wei_table;
-//     int total_weight;
-//     public:
-//     bool Add(int num, T elem);
-//     bool Delete(int num, T elem);
-// };
-
+//结点类声明及简单函数定义
 template <class T>
 class TreeNode {
-    // friend Tree<T>;
     private:
     T element;
+    int weight;
+    string coding;
     TreeNode<T> *lchild;
     TreeNode<T> *rchild;
     public:
-    TreeNode(T elem):element(elem),lchild(nullptr),rchild(nullptr){}
+    TreeNode(T elem, int weight):element(elem),weight(weight),lchild(nullptr),rchild(nullptr),coding(""){}
+    int getWeight() const {return weight;}
     bool addL(TreeNode<T> &elem);
     bool addR(TreeNode<T> &elem);
+    bool isLeaf() {return (this->lchild == nullptr && this->rchild == nullptr);}
+    void print() {cout << element << ':' << this->coding << endl;}
+    friend TreeNode<char>* operator+(TreeNode<char> &_a,TreeNode<char> &_b);
+    friend void Traverse(TreeNode<char> *root, unordered_map<char, string> &_toDic);
+    friend void decode(string bin_code, TreeNode<char> *root);
 };
-
-class wei_node_pair;
-
-template<class T>
-class weight_TreeNode:public TreeNode<T> {
-    friend wei_node_pair;
-    private:
-    int weight;
-    public:
-    weight_TreeNode(T elem, int weight = 0):TreeNode<T>(elem),weight(weight) {}
-    weight_TreeNode* operator+(weight_TreeNode &obj) {
-        return new weight_TreeNode('\0',this->weight+obj.weight);
+//函数定义
+TreeNode<char>* buildHuffman(vector<TreeNode<char>* > &pq);
+void buildDic(string text, unordered_map<char, int> &dic);
+//主函数
+int main() {
+    string text;
+    vector<TreeNode<char>* > pq;
+    TreeNode<char> *root;
+    cin >> text;
+    unordered_map<char, int> stat;
+    unordered_map<char, string>toDic;
+    buildDic(text, stat);
+    for(auto &x:stat) {
+        pq.push_back(new TreeNode<char>(x.first, x.second));
     }
-    int GetWeight() const {
-        return this->weight;
-    }
-};
-
-class wei_node_pair {
-    friend bool operator >(wei_node_pair a, wei_node_pair b);
-    private:
-    pair<int,weight_TreeNode<char>*> elem;
-    public:
-    wei_node_pair(weight_TreeNode<char> &obj) {
-        elem.first = obj.weight;
-        elem.second = &obj;
-    }
-    // wei_node_pair(int weight) {
-    //     elem.first = weight;
-    //     elem.second = this;
-    // }
-    // bool operator <(const wei_node_pair &obj) {
-    //     return this->elem.first < obj.elem.first;
-    // }
-    // bool operator >(const wei_node_pair &obj) {
-    //     return this->elem.first > obj.elem.first;
-    // }
-    weight_TreeNode<char> * second() const{
-        return elem.second;
-    }
-};
-bool operator >(wei_node_pair a, wei_node_pair b) {
-    return a.elem.first > b.elem.first;
+    sort(pq.begin(), pq.end(), 
+            [](const TreeNode<char> *_a,const TreeNode<char> *_b) {
+                return _a->getWeight() > _b->getWeight();
+                }
+    );
+    Traverse(buildHuffman(pq),toDic);
+    return 0;   
 }
-// template <class T>
-// class Tree {
-//     private:
-//     TreeNode<T> *root;
-//     int elemNum;
-//     public:
-//     Tree():elemNum(0),root(nullptr){}
-//     TreeNode<T> & Root() {return *root}
-//     TreeNode<T> &Parent(T elem);
-//     TreeNode<T> &LChild(T elem);
-//     TreeNode<T> &RightSibling(T elem);
-//     bool TreeEmpty();
-//     int TreeDepth();
-//     void Traverse();
-// };
+//类函数及友元函数定义
+TreeNode<char>* buildHuffman(vector<TreeNode<char>* > &pq) {
+    TreeNode<char> *root, *right, *left;
+    if(pq.empty()) {
+        return nullptr;
+    }
+    while(pq.size() > 1) {
+        right = pq.back();
+        pq.pop_back();
+        left = pq.back();
+        pq.pop_back();
+        root = *right + *left;
+        root->addL(*left);
+        root->addR(*right);
+        pq.push_back(root);
+        sort(pq.begin(), pq.end(), 
+             [](const TreeNode<char> *_a,const TreeNode<char> *_b) {
+                 return _a->getWeight() > _b->getWeight();
+                 }
+        );
+    }
+    root = pq.back();
+    pq.pop_back();
+    return root;
+}
 
-priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq;
-
-weight_TreeNode<char>* buildHuffman(priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq);
+TreeNode<char>* operator+(TreeNode<char> &_a,TreeNode<char> &_b) {
+    return new TreeNode<char>('\0',_a.weight + _b.weight);
+}
 
 template<class T>
 bool TreeNode<T>::addL(TreeNode<T> &elem) {
@@ -113,28 +96,45 @@ bool TreeNode<T>::addR(TreeNode<T> &elem) {
     return false;
 }
 
-weight_TreeNode<char>* buildHuffman(priority_queue<wei_node_pair,vector<wei_node_pair>,greater<wei_node_pair> > pq) {
-    weight_TreeNode<char> *root, *right, *left;
-    if(pq.empty()) {
-        return nullptr;
+void buildDic(string text, unordered_map<char, int> &dic) {
+    int len = text.length();
+    for(int i = 0; i < len; i++) {
+        if(dic.find(text[i])==dic.end()) {
+            dic[text[i]] = 1;
+        }
+        else {
+            dic.at(text[i]) += 1;
+        }
     }
-    if(pq.size() == 1) {
-        root = pq.top().second();
-        pq.pop();
-        return root;
+}
+
+void Traverse(TreeNode<char> *root, unordered_map<char, string> &_toDic) {
+    if(root->isLeaf()) {
+        root->print();
+        return;
     }
-    while(true) {
-        right = pq.top().second();
-        pq.pop();
-        left = pq.top().second();
-        pq.pop();
-        root = *right + *left;
-        root->addL(*left);
-        root->addR(*right);
-        if(pq.empty()) {
-            break;
-        } 
-        pq.push(wei_node_pair(*root));
+    
+    if (root->lchild != nullptr) {
+        root->lchild->coding =  root->coding + '1';
+        Traverse(root->lchild, _toDic);
     }
-    return root;
+    if (root->rchild != nullptr) {
+        root->rchild->coding =  root->coding + '0';
+        Traverse(root->rchild, _toDic);
+    }
+    return;
+}
+
+void decode(string bin_code, TreeNode<char> *root) {
+    string ans = "";
+    TreeNode<char> *p = root;
+    int len = bin_code.length();
+    for(int i = 0 ;i < len; i++) {
+        p = bin_code[i] == '1' ? p->lchild : p->rchild;
+        if(p->isLeaf()) {
+            ans = ans + p->element;
+            p = root;
+        }
+    }
+    cout << ans << endl;
 }
