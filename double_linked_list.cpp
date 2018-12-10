@@ -10,7 +10,7 @@ class Node
     friend class list<T>;
     friend class ListIter<T>;
     public:
-    Node(const T& _elem);
+    Node(const T &_elem);
     Node();
     private:
     T elem;
@@ -29,24 +29,26 @@ class list
     public:
     list();
     ~list();
-    bool empty(){return elemNum==0;};
+    bool empty();
     void push_back(const T elem);
-    bool insert(ListIter<T> it, const T elem);
-    ListIter<T> begin() {return ListIter<T>(this->head);}
-    ListIter<T> end() {return tail->next;}
-    bool erase(ListIter<T> it, T& elem);
+    bool insert(const ListIter<T> &it, const T &elem);
+    ListIter<T> begin();
+    ListIter<T> end();
+    ListIter<T> erase(ListIter<T> &it);
     void clear();
-    //begin(),end() iterator, advance(),erase()
+    int size();
 };
-
-//迭代器类声明
+//迭代器友元函数声明
+template<class T>
+void advance(ListIter<T> &it, int num);
+//迭代器类声明以及实现
 template<class T>
 class ListIter {
     friend class list<T>;
     private:
     Node<T> *element;
     public:
-    ListIter(Node<T> *elem):element(elem){}
+    ListIter(Node<T> *elem = nullptr):element(elem){}
     void operator++(int) {
         if(element->next != nullptr) {
             element = element->next;
@@ -58,24 +60,30 @@ class ListIter {
         }
     }
     void operator--(int) {
-        if(element == head) {
+        if(element->pre->pre == nullptr) {
             return;
         }
         element = element->pre;
     }
     void operator--() {
-        if(element == head) {
+        if(element->pre->pre == nullptr) {
             return;
         }
         element = element->pre;
     }
     T &operator *() {
-        return &element->elem;
+        return element->elem;
     }
-    bool operator==(ListIter<T> &obj) {
+    bool operator==(const ListIter<T> &obj) {
         return this->element == obj.element;
     }
-    friend void advance(ListIter<T> it, int num);
+    bool operator !=(const ListIter<T> &obj) {
+        return this->element != obj.element;
+    }
+    T *operator->() {
+        return &element->elem;
+    }
+    friend void advance<>(ListIter<T> &it, int num);
 };
 //函数实现
 template<class T>
@@ -104,13 +112,34 @@ list<T>::list()
 }
 
 template<class T>
-bool list<T>::insert(ListIter<T> it, const T elem)
+bool list<T>::empty() {
+    return elemNum==0;
+}
+
+template<class T>
+ListIter<T> list<T>::begin() {
+    return ListIter<T>(head);
+}
+
+template<class T>
+ListIter<T> list<T>::end() {
+    return ListIter<T>(tail);
+}
+
+template<class T>
+int list<T>::size() {
+    return elemNum;
+}
+
+template<class T>
+bool list<T>::insert(const ListIter<T> &it, const T &elem)
 {
     Node<T> *p = new Node<T>(elem);
     p->pre = it.element->pre;
+    p->next = it.element;
     p->pre->next = p;
     it.element->pre = p;
-    if(it == this->begin()) {
+    if(it.element == head) {
         head = p;
     }
     elemNum++;
@@ -123,27 +152,32 @@ void list<T>::push_back(const T elem) {
 }
 
 template<class T>
-bool list<T>::erase(ListIter<T> it, T& elem)
+ListIter<T> list<T>::erase(ListIter<T> &it)
 {
     if(elemNum == 0) {
-        return false;
+        return it;
     }
     Node<T> *p = it.element;
-    it.element->pre->next = it.element->next;
-    it.element->next->pre = it.element->pre;
-    p = it.element;
+    if(p == tail) {
+        return it;
+    }
+    p->pre->next = p->next;
+    p->next->pre = p->pre;
     it.element = it.element->next;
     delete p;
+    if(p == head) {
+        head = it.element;
+    }
     elemNum--;
-    return true;
+    return it;
 }
 
 template<class T>
 void list<T>::clear()
 {
     ListIter<T> it = this->begin();
-    while(!(it == this->end()) {
-        this->erase(it);
+    while(it != this->end()) {
+        it = this->erase(it);
     }
     return;
 }
@@ -155,8 +189,9 @@ list<T>::~list()
     delete head->pre;
     delete head;
 }
+
 template<class T>
-void advance(ListIter<T> it, int num) {
+void advance(ListIter<T> &it, int num) {
     if(num > 0) {
         while(num--) {
             it++;
@@ -168,3 +203,23 @@ void advance(ListIter<T> it, int num) {
         }
     }
 }
+
+// int main() {
+//     list<int> a;
+//     ListIter<int> it = a.begin();
+//     for(int i =  0; i < 10; i++) {
+//         a.push_back(i);
+//     }
+//     it = a.begin();
+//     it++;
+//     it = a.erase(it);
+//     for(it = a.begin(); it != a.end(); it++) {
+//         cout << *it << endl;
+//     }
+//     a.clear();
+//     cout << 'h' << endl;
+//     for(it = a.begin(); it != a.end(); it++) {
+//         cout << *it << endl;
+//     }
+//     return 0;
+// }
