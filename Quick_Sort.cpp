@@ -1,5 +1,3 @@
-#include"iostream"
-using namespace std;
 //Quick_Sort
 template<class T>
 int make_order(T arr[], int size) {
@@ -24,7 +22,8 @@ int make_order(T arr[], int size) {
             p++;
         }
     }
-    return (q-arr)/sizeof(T);
+    // cout << "divide_index = " << (q-arr) << endl;
+    return (q-arr);
 }
 
 template<class T>
@@ -38,9 +37,16 @@ void QuickSort(T arr[], int size) {
     QuickSort(arr+divide+1, size-divide-1);
 }
 
+#include"iostream"
+using namespace std;
+
 int main() {
+    int b[] = {10,9,8,7,6,5,4,3,2,1};
     int a[] = {9,15,26,8,99,100,0,3};
     QuickSort(a,sizeof(a)/sizeof(int));
+    // make_order(b,sizeof(b)/sizeof(int));
+    // make_order(b,sizeof(b)/sizeof(int)-1);
+    // make_order(b+1,sizeof(b)/sizeof(int)-2);    
     for(int i =0; i < sizeof(a)/sizeof(int);i++) {
         cout << a[i] << endl;
     }
