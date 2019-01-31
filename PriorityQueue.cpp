@@ -8,7 +8,7 @@ class priority_queue {
     int size;
     vector<T> pq;
     void heapify(int i);
-    int Index_of_Max(int i, vector<T> &heap);
+    int Index_of_Max(int i);
 
     public:
     priority_queue():size(0){pq.push_back(T());}
@@ -17,20 +17,25 @@ class priority_queue {
 };
 
 template<class T>
-int priority_queue<T>::Index_of_Max(int i, vector<T> &heap) {
-    //TODO
-    return i;
+int priority_queue<T>::Index_of_Max(int i) {
+    int res_idx = i;
+    if(pq[i] <pq[i*2]) {
+        res_idx = i*2;
+    }
+    if(pq[res_idx] < pq[i*2+1]) {
+        res_idx = i*2+1;
+    }
+    return res_idx;
 }
 
 template<class T>
 void priority_queue<T>::heapify(int i) {
-    int size = heap.size();this->pq.size();
     if(i*2 > size) {
         return;
     }
     else if(i*2 + 1 > size) {
-        if(heap[i] < heap[i*2]) {
-            swap(heap[i], heap[i*2]);
+        if(pq[i] < pq[i*2]) {
+            swap(pq[i], pq[i*2]);
         }
         heapify(i*2);
     }
@@ -40,7 +45,7 @@ void priority_queue<T>::heapify(int i) {
             return;
         }
         else {
-            swap(heap[idx], heap[i]);
+            swap(pq[idx], pq[i]);
             heapify(idx);
         }
     }
@@ -50,7 +55,20 @@ void priority_queue<T>::heapify(int i) {
 template<class T>
 void priority_queue<T>::push(T &elem) {
     pq.push_back(elem);
+    size++;
+    for(int i = size/2; i > 0; i--) {
+        this->heapify(i);
+    }
+}
+
+template<class T>
+T priority_queue<T>::pop() {
+    T res = pq.pop_back();
+    swap(pq[1],pq[size]);
+    size--;
     for(int i = this->size/2; i > 0; i--) {
         this->heapify(i);
     }
+
+    return res;
 }
