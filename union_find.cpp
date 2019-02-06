@@ -30,8 +30,10 @@ bool UF::connected(int p, int q) {
 }
 
 void UF::unite(int p, int q) {
-    id[find(p)] = find(q);
-    _count--;
+    if(id[find(p)] != find(q)) {
+        id[find(p)] = find(q);
+        _count--;
+    }
 }
 
 int UF::count() {
